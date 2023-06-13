@@ -30,7 +30,7 @@ class AmeduesConnector extends Connector
     {
         return [
             "Content-Type" => "application/x-www-form-urlencoded",
-            "Authorization" => "Bearer 6gd9O8DcpBtqOHF4wYUYOoA1Pq0w"
+           // "Authorization" => "Bearer 6gd9O8DcpBtqOHF4wYUYOoA1Pq0w"
         ];
     }
 
