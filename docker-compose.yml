@@ -1,0 +1,65 @@
+version: "3.7"
+services:
+    app:
+        build:
+            args:
+                user: creativecloud
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        image: utask
+        container_name: utask-app
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - utask
+
+    nginx:
+        image: nginx:alpine
+        container_name: utask-nginx
+        restart: unless-stopped
+        ports:
+            - 8010:80
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d/
+        networks:
+            - utask
+    db:
+        image: mysql:8.0
+        container_name: utask-db
+        restart: unless-stopped
+        volumes:
+            - ./data/mysql:/var/lib/mysql/
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - utask
+
+    phpmyadmin:
+        image: 'phpmyadmin:latest'
+        container_name: utask-phpmyadmin
+        ports:
+            - 8087:80
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+        links:
+            - "db:db"
+        depends_on:
+            - db
+        networks:
+            - utask
+
+
+networks:
+    utask:
+        driver: bridge
+    utask_utask:
+        external: true
